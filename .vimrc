@@ -8,7 +8,6 @@ if has('vim_starting')
 endif
 
 let vimplug_exists=expand('~/.vim/autoload/plug.vim')
-
 let g:vim_bootstrap_langs = "javascript,php,html,ruby"
 let g:vim_bootstrap_editor = "vim"				" nvim or vim
 
@@ -50,6 +49,11 @@ Plug 'avelino/vim-bootstrap-updater'
 Plug 'sheerun/vim-polyglot'
 Plug 'rking/ag.vim'
 Plug 'kien/ctrlp.vim'
+Plug 'tpope/vim-repeat'
+Plug 'lfilho/cosco.vim'
+Plug 'frazrepo/vim-rainbow'
+
+
 if isdirectory('/usr/local/opt/fzf')
   Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 else
@@ -79,6 +83,9 @@ Plug 'honza/vim-snippets'
 
 "" Color
 Plug 'tomasr/molokai'
+
+""Colorize most complex codes were composed of a mass of different kinds of parentheses
+let g:rainbow_active = 1
 
 "*****************************************************************************
 "" Custom bundles
@@ -139,13 +146,10 @@ set ttyfast
 set backspace=indent,eol,start
 
 "" Tabs. May be overriten by autocmd rules
-set tabstop=4
+set tabstop=3
 set softtabstop=0
-set shiftwidth=4
+set shiftwidth=3
 set expandtab
-
-"" Map leader to ,
-let mapleader=','
 
 "" Enable hidden buffers
 set hidden
@@ -179,7 +183,7 @@ let g:session_command_aliases = 1
 "*****************************************************************************
 syntax on
 set ruler
-set number
+set number relativenumber
 
 let no_buffers_menu=1
 if !exists('g:not_finish_vimplug')
@@ -221,10 +225,11 @@ if &term =~ '256color'
   set t_ut=
 endif
 
-
 "" Disable the blinking cursor.
 set gcr=a:blinkon0
-set scrolloff=3
+
+""MatchParen color
+hi MatchParen cterm=bold ctermbg=none ctermfg=blue
 
 "" Status bar
 set laststatus=2
@@ -324,6 +329,13 @@ augroup END
 augroup vimrc-remember-cursor-position
   autocmd!
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+augroup END
+
+""Cosco.vim
+augroup cosco-vim
+  autocmd! 
+  autocmd FileType javascript,css,php nmap <silent> <Leader>; <Plug>(cosco-commaOrSemiColon)
+  autocmd FileType javascript,css,php imap <silent> <Leader>; <c-o><Plug>(cosco-commaOrSemiColon)
 augroup END
 
 "" txt
@@ -485,7 +497,7 @@ let g:javascript_enable_domhtmlcss = 1
 " vim-javascript
 augroup vimrc-javascript
   autocmd!
-  autocmd FileType javascript set tabstop=4|set shiftwidth=4|set expandtab softtabstop=4
+  autocmd FileType javascript set tabstop=3|set shiftwidth=3|set expandtab softtabstop=3
 augroup END
 
 
