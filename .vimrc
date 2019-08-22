@@ -174,6 +174,11 @@ set smartcase
 ""Ctrl p
 let g:ctrlp_max_files=0
 let g:ctrlp_max_depth=40
+" Ignore some folders and files for CtrlP indexing
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\.git$\|\.yardoc\|tmp$',
+  \ 'file': '\.so$\|\.dat$|\.DS_Store$'
+  \ }
 
 "" Directories for swp files
 set nobackup
