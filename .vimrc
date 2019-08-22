@@ -1,4 +1,4 @@
-" vim-bootstrap b990cad
+" vim-bootstrap
 
 "*****************************************************************************
 "" Vim-PLug core
@@ -52,6 +52,16 @@ Plug 'kien/ctrlp.vim'
 Plug 'tpope/vim-repeat'
 Plug 'lfilho/cosco.vim'
 Plug 'frazrepo/vim-rainbow'
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+
+" Use deoplete.
+let g:deoplete#enable_at_startup = 1
 
 
 if isdirectory('/usr/local/opt/fzf')
@@ -145,6 +155,7 @@ set ttyfast
 "" Fix backspace indent
 set backspace=indent,eol,start
 
+
 "" Tabs. May be overriten by autocmd rules
 set tabstop=3
 set softtabstop=0
@@ -159,6 +170,10 @@ set hlsearch
 set incsearch
 set ignorecase
 set smartcase
+
+""Ctrl p
+let g:ctrlp_max_files=0
+let g:ctrlp_max_depth=40
 
 "" Directories for swp files
 set nobackup
@@ -189,6 +204,10 @@ let no_buffers_menu=1
 if !exists('g:not_finish_vimplug')
   colorscheme molokai
 endif
+
+""Customize conceal color
+let g:indentLine_color_term = 239
+let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 
 set mousemodel=popup
 set t_Co=256
@@ -304,6 +323,9 @@ if g:vim_bootstrap_editor == 'nvim'
 else
   nnoremap <silent> <leader>sh :VimShellCreate<CR>
 endif
+
+" ag.vim
+let g:ag_working_path_mode="r"
 
 "*****************************************************************************
 "" Functions
@@ -549,6 +571,12 @@ nnoremap <leader>rit  :RInlineTemp<cr>
 vnoremap <leader>rrlv :RRenameLocalVariable<cr>
 vnoremap <leader>rriv :RRenameInstanceVariable<cr>
 vnoremap <leader>rem  :RExtractMethod<cr>
+
+"Keep on center
+:nnoremap j jzz
+:nnoremap k kzz
+:nnoremap <Down> jzz
+:nnoremap <Up> kzz
 
 
 "*****************************************************************************
