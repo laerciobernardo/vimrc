@@ -43,7 +43,6 @@ Plug 'vim-scripts/CSApprox'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'Raimondi/delimitMate'
 Plug 'majutsushi/tagbar'
-Plug 'scrooloose/syntastic'
 Plug 'Yggdroot/indentLine'
 Plug 'avelino/vim-bootstrap-updater'
 Plug 'sheerun/vim-polyglot'
@@ -52,6 +51,9 @@ Plug 'kien/ctrlp.vim'
 Plug 'tpope/vim-repeat'
 Plug 'lfilho/cosco.vim'
 Plug 'frazrepo/vim-rainbow'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'dense-analysis/ale'
+
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 else
@@ -279,7 +281,6 @@ endif
 
 " vim-airline
 let g:airline_theme = 'powerlineish'
-let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tagbar#enabled = 1
@@ -331,6 +332,15 @@ endif
 
 " ag.vim
 let g:ag_working_path_mode="r"
+
+"ale
+let g:ale_fixers = {
+\   'javascript': ['eslint'],
+\}
+let g:ale_linters_explicit = 1
+let g:ale_sign_column_always = 1
+" Set this. Airline will handle the rest.
+let g:airline#extensions#ale#enabled = 1
 
 "*****************************************************************************
 "" Functions
@@ -446,15 +456,6 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 let g:UltiSnipsEditSplit="vertical"
 
-" syntastic
-let g:syntastic_always_populate_loc_list=1
-let g:syntastic_error_symbol='✗'
-let g:syntastic_warning_symbol='⚠'
-let g:syntastic_style_error_symbol = '✗'
-let g:syntastic_style_warning_symbol = '⚠'
-let g:syntastic_auto_loc_list=1
-let g:syntastic_aggregate_errors = 1
-
 " Tagbar
 nmap <silent> <F4> :TagbarToggle<CR>
 let g:tagbar_autofocus = 1
@@ -526,10 +527,6 @@ augroup vimrc-javascript
   autocmd!
   autocmd FileType javascript set tabstop=3|set shiftwidth=3|set expandtab softtabstop=3
 augroup END
-
-
-" php
-
 
 " ruby
 let g:rubycomplete_buffer_loading = 1
