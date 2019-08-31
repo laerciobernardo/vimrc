@@ -46,13 +46,13 @@ Plug 'majutsushi/tagbar'
 Plug 'Yggdroot/indentLine'
 Plug 'avelino/vim-bootstrap-updater'
 Plug 'sheerun/vim-polyglot'
-Plug 'rking/ag.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'tpope/vim-repeat'
 Plug 'lfilho/cosco.vim'
 Plug 'frazrepo/vim-rainbow'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'dense-analysis/ale'
+Plug 'gabesoft/vim-ags'
 
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -99,6 +99,16 @@ Plug 'tomasr/molokai'
 ""Colorize most complex codes were composed of a mass of different kinds of parentheses
 let g:rainbow_active = 1
 
+"" Silver searcher
+" Search for the word under cursor
+nnoremap <Leader>s :Ags<Space><C-R>=expand('<cword>')<CR><CR>
+" Search for the visually selected text
+vnoremap <Leader>s y:Ags<Space><C-R>='"' . escape(@", '"*?()[]{}.') . '"'<CR><CR>
+" Run Ags
+nnoremap <Leader>a :Ags<Space>
+" Quit Ags
+nnoremap <Leader><Leader>a :AgsQuit<CR>
+
 "*****************************************************************************
 "" Custom bundles
 "*****************************************************************************
@@ -141,7 +151,6 @@ call plug#end()
 
 " Required:
 filetype plugin indent on
-
 
 "*****************************************************************************
 "" Basic Setup
@@ -211,6 +220,12 @@ let no_buffers_menu=1
 if !exists('g:not_finish_vimplug')
   colorscheme molokai
 endif
+
+""fold and unfold
+set foldmethod=indent
+set foldnestmax=10
+set nofoldenable
+set foldlevel=2
 
 ""Customize conceal color
 let g:indentLine_color_term = 239
@@ -329,9 +344,6 @@ if g:vim_bootstrap_editor == 'nvim'
 else
   nnoremap <silent> <leader>sh :VimShellCreate<CR>
 endif
-
-" ag.vim
-let g:ag_working_path_mode="r"
 
 "ale
 let g:ale_fixers = {
