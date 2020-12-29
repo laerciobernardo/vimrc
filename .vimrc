@@ -91,6 +91,7 @@ let g:ctrlp_clear_cache_on_exit = 0
 let g:blamer_enabled = 1
 let g:blamer_delay = 500
 highlight Blamer guifg=lightgrey
+let g:blamer_template = '<commit-short> • <committer>, <committer-time> • <summary>'
 "nnoremap <Leader>s :<C-u>call gitblame#echo()<CR>
 
 ""fold and unfold
