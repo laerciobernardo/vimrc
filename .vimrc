@@ -27,22 +27,35 @@ endif
 "Initialize the plugin system
 call plug#begin(expand('~/.vim/plugged'))
 Plug 'preservim/nerdtree'
+Plug 'preservim/nerdtree' |
+            \ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ryanoasis/vim-devicons'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'majutsushi/tagbar'
-Plug 'frazrepo/vim-rainbow'
-Plug 'sheerun/vim-polyglot'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'puremourning/vimspector'
 Plug 'Yggdroot/indentLine'
 Plug 'tpope/vim-repeat'
 Plug 'lfilho/cosco.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'StanAngeloff/php.vim'
-Plug 'mxw/vim-jsx'
 Plug 'tyrannicaltoucan/vim-quantum'
 Plug 'sheerun/vim-polyglot'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'natebosch/dartlang-snippets'
+Plug 'dart-lang/dart-vim-plugin'
+Plug 'alvan/vim-closetag'
+Plug 'posva/vim-vue'
+Plug 'APZelos/blamer.nvim'
+"Plug 'zivyangll/git-blame.vim'
+
+if has('nvim')
+  Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
 call plug#end()
 
 "Visual settings
@@ -60,7 +73,25 @@ set background=dark
 set termguicolors
 let g:airline_theme='quantum'
 colorscheme quantum
+let g:quantum_italics=1
+let g:lightline = {
+      \ 'colorscheme': 'quantum',
+      \ }
+""Highlight the current line
+set cursorline
+hi cursorline cterm=none term=none
+autocmd WinEnter * setlocal cursorline
+autocmd WinLeave * setlocal nocursorline
+highlight CursorLine guibg=#263238 ctermbg=239
 
+""fzf
+let g:ctrlp_clear_cache_on_exit = 0
+
+"Git blame
+let g:blamer_enabled = 1
+let g:blamer_delay = 500
+highlight Blamer guifg=lightgrey
+"nnoremap <Leader>s :<C-u>call gitblame#echo()<CR>
 
 ""fold and unfold
 set foldmethod=indent
@@ -70,10 +101,18 @@ set foldlevel=2
 
 "Fix the identation
 map <F7> gg=G<C-o><C-o>
+filetype indent on
+set smartindent
+autocmd BufRead,BufWritePre *.sh normal gg=G
+
 
 ""Customize conceal color
+let g:indentLine_setColors=1
 let g:indentLine_color_term = 239
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+" Background (Vim, GVim)
+let g:indentLine_bgcolor_term = 202
+let g:indentLine_bgcolor_gui = '#263238'
 
 ""FZF
 nmap <C-P> :FZF<CR>
@@ -121,6 +160,7 @@ let g:tagbar_type_typescript = {
     \ 'e:enums',
   \ ]
 \ }
+
 "*****************************************************************************
 ""Coc config
 "*****************************************************************************
@@ -132,33 +172,38 @@ let g:coc_global_extensions = [
    \ 'coc-eslint',
    \ 'coc-prettier',
    \ 'coc-json',
+   \ 'coc-phpls',
    \ ]
-" Use <C-l> for trigger snippet expand.
-imap <C-Space> <Plug>(coc-snippets-expand)
-
-" Use <C-j> for select text for visual placeholder of snippet.
-vmap <C-j> <Plug>(coc-snippets-select)
-
-" Use <C-j> for jump to next placeholder, it's default of coc.nvim
-let g:coc_snippet_next = '<c-j>'
-
-" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
-let g:coc_snippet_prev = '<c-k>'
-
-" Use <C-j> for both expand and jump (make expand higher priority.)
-imap <C-j> <Plug>(coc-snippets-expand-jump)
+""Coc-snippets
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? coc#_select_confirm() :
       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
       \ <SID>check_back_space() ? "\<TAB>" :
       \ coc#refresh()
-
+ 
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
-
+ 
 let g:coc_snippet_next = '<tab>'
+""Coc-flutter
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+""Goto definition
+function! s:GoToDefinition()
+  if CocAction('jumpDefinition')
+    return v:true
+  endif
+
+  let ret = execute("silent! normal \<C-]>")
+  if ret =~ "Error" || ret =~ "错误"
+    call searchdecl(expand('<cword>'))
+  endif
+endfunction
+
+nmap <silent> gd :call <SID>GoToDefinition()<CR>
 
 ""Cosco.vim
 augroup cosco-vim
@@ -166,6 +211,48 @@ augroup cosco-vim
   autocmd FileType javascript,css,php nmap <silent> <Leader>; <Plug>(cosco-commaOrSemiColon)
   autocmd FileType javascript,css,php imap <silent> <Leader>; <c-o><Plug>(cosco-commaOrSemiColon)
 augroup END
+
+""Closing tags
+" filenames like *.xml, *.html, *.xhtml, ...
+" These are the file extensions where this plugin is enabled.
+"
+let g:closetag_filenames = '*.html,*.xhtml,*.phtml'
+
+" filenames like *.xml, *.xhtml, ...
+" This will make the list of non-closing tags self-closing in the specified files.
+"
+let g:closetag_xhtml_filenames = '*.xhtml,*.jsx'
+
+" filetypes like xml, html, xhtml, ...
+" These are the file types where this plugin is enabled.
+"
+let g:closetag_filetypes = 'html,xhtml,phtml'
+
+" filetypes like xml, xhtml, ...
+" This will make the list of non-closing tags self-closing in the specified files.
+"
+let g:closetag_xhtml_filetypes = 'xhtml,jsx'
+
+" integer value [0|1]
+" This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
+"
+let g:closetag_emptyTags_caseSensitive = 1
+
+" dict
+" Disables auto-close if not in a "valid" region (based on filetype)
+"
+let g:closetag_regions = {
+    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
+    \ 'javascript.jsx': 'jsxRegion',
+    \ }
+
+" Shortcut for closing tags, default is '>'
+"
+let g:closetag_shortcut = '>'
+
+" Add > at current position without closing the current tag, default is ''
+"
+let g:closetag_close_shortcut = '<leader>>'
 
 "*****************************************************************************
 "" Abbreviations
